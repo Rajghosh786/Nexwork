@@ -14,6 +14,7 @@ const invitationRoute = require("./routes/invitation.route");
 const workspaceRoute = require("./routes/workspace.route");
 const chatRoute = require("./routes/chat.route");
 const notificationRoute = require("./routes/notification.route");
+const todoRoute = require("./routes/todo.route");
 const setupSocketHandlers = require("./socket/socket.handlers");
 
 const app = express();
@@ -46,6 +47,7 @@ app.use("/api/invitations", invitationRoute);
 app.use("/api/workspaces", workspaceRoute);
 app.use("/api/conversations", chatRoute);
 app.use("/api/notifications", notificationRoute);
+app.use("/api/todo", todoRoute);
 
 setupSocketHandlers(io);
 

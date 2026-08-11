@@ -4,10 +4,12 @@ import {
     Home,
     LogOut,
     Mail,
+    ListTodo,
     Moon,
     Plus,
     Sun,
     X,
+    BookOpenCheck,
 } from "lucide-react";
 
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
@@ -67,6 +69,7 @@ const Sidebar = ({
     activeView,
     selectedConversation,
     onNavigateHome,
+    onNavigateTodo,
     onSelectConversation,
     onCreateChannel,
     onCreateDirectMessage,
@@ -136,12 +139,8 @@ const Sidebar = ({
         <aside className="flex h-screen w-[246px] shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-[#1c1c21]">
             <div className="flex h-[70px] shrink-0 items-center justify-between border-b border-gray-100 px-5 dark:border-gray-800">
                 <div className="flex items-center gap-2">
-                    <div className="grid h-8 w-8 place-items-center rounded-lg bg-violet-600 text-sm font-bold text-white">
-                        S
-                    </div>
-
                     <span className="text-sm font-bold text-gray-900 dark:text-white">
-                        SafarBharat
+                        Nexwork
                     </span>
                 </div>
 
@@ -176,6 +175,18 @@ const Sidebar = ({
                         label="Home"
                         active={activeView === "home"}
                         onClick={onNavigateHome}
+                    />
+                    <SidebarItem
+                        icon={ListTodo}
+                        label="To-Do"
+                        active={activeView === "todo"}
+                        onClick={onNavigateTodo}
+                    />
+                    <SidebarItem
+                        icon={BookOpenCheck}
+                        label="Collab Task"
+                        // active={activeView === "todo"}
+                        onClick={onNavigateTodo}
                     />
                 </SidebarSection>
 

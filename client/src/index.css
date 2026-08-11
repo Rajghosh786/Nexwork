@@ -22,3 +22,7 @@ body {
         "Segoe UI",
         sans-serif;
 }
+
+.bc{
+    border: 2px solid red;
+}

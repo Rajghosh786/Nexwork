@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import InvitationPanel from "./InvitationPanel";
 import DashboardHome from "./DashboardHome";
 import ChatView from "./ChatView";
+import TodoBoard from "./todo/TodoBoard";
 import CreateChannelModal from "./CreateChannelModal";
 import CreateDirectMessageModal from "./CreateDirectMessageModal";
 
@@ -230,6 +231,12 @@ const Dashboard = () => {
         setShowSidebar(false);
     };
 
+    const handleNavigateTodo = () => {
+        setActiveView("todo");
+        setSelectedConversation(null);
+        setShowSidebar(false);
+    };
+
     const handleSelectConversation = (conversation, viewType) => {
         setSelectedConversation(conversation);
         setActiveView(viewType);
@@ -312,6 +319,7 @@ const Dashboard = () => {
         activeView,
         selectedConversation,
         onNavigateHome: handleNavigateHome,
+        onNavigateTodo: handleNavigateTodo,
         onSelectConversation: handleSelectConversation,
         onCreateChannel: () => setShowCreateChannel(true),
         onCreateDirectMessage: () => setShowCreateDirectMessage(true),
@@ -322,6 +330,10 @@ const Dashboard = () => {
     const getPageTitle = () => {
         if (activeView === "home") {
             return "Home";
+        }
+
+        if (activeView === "todo") {
+            return "To-Do";
         }
 
         if (selectedConversation) {
@@ -367,9 +379,11 @@ const Dashboard = () => {
                             <p className="text-[10px] text-gray-400">
                                 {activeView === "home"
                                     ? "Workspace"
-                                    : activeView === "channel"
-                                      ? "Channel"
-                                      : "Direct Message"}
+                                    : activeView === "todo"
+                                      ? "Personal"
+                                      : activeView === "channel"
+                                        ? "Channel"
+                                        : "Direct Message"}
                             </p>
 
                             <p className="truncate text-sm font-semibold">
@@ -410,6 +424,10 @@ const Dashboard = () => {
                         workspaces={workspaces}
                         invitationCount={invitationCount}
                     />
+                ) : activeView === "todo" ? (
+                    <div className="h-[calc(100vh-70px)]">
+                        <TodoBoard />
+                    </div>
                 ) : (
                     <div className="h-[calc(100vh-70px)]">
                         <ChatView
