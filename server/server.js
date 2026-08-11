@@ -1,23 +1,62 @@
-const express = require("express")
-const app = express()
+const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const http = require("http");
+const { Server } = require("socket.io");
+
+require("dotenv").config();
+
 const { connectingDB } = require("./db");
-// const { userRoute } = require("./routes/user.route");
-// const { todoRoute } = require("./routes/todo.route");
-require("dotenv").config()
-app.use(express.json())
 
-connectingDB()
+const authRoute = require("./routes/auth.route.js");
+const onboardingRoute = require("./routes/onboarding.route");
+const invitationRoute = require("./routes/invitation.route");
+const workspaceRoute = require("./routes/workspace.route");
+const chatRoute = require("./routes/chat.route");
+const notificationRoute = require("./routes/notification.route");
+const setupSocketHandlers = require("./socket/socket.handlers");
 
+const app = express();
+const server = http.createServer(app);
 
-// app.use("/user",userRoute)
-// app.use("/todo",todoRoute)
+const io = new Server(server, {
+    cors: {
+        origin: process.env.CLIENT_URL,
+        credentials: true,
+    },
+});
 
+app.set("io", io);
 
-app.use((req,res)=>{
-    res.status(404).json({msg:"This request is not found"})
-})
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true,
+    })
+);
 
-port = process.env.port || 8000
-app.listen(port,()=>{
-    console.log(`server started on ${port} port`)
-})
+app.use(express.json());
+app.use(cookieParser());
+
+connectingDB();
+
+app.use("/api/auth", authRoute);
+app.use("/api/onboarding", onboardingRoute);
+app.use("/api/invitations", invitationRoute);
+app.use("/api/workspaces", workspaceRoute);
+app.use("/api/conversations", chatRoute);
+app.use("/api/notifications", notificationRoute);
+
+setupSocketHandlers(io);
+
+app.use((req, res) => {
+    res.status(404).json({
+        msg: "This request is not found",
+    });
+});
+
+const port = process.env.PORT || 8000;
+
+server.listen(port, () => {
+    console.log(`Server started on ${port} port`);
+});
