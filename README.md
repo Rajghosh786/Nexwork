@@ -170,6 +170,152 @@ The dashboard includes:
 
 ---
 
+# 🛠️ Tech Stack
+
+## Frontend
+
+* React
+* React Router
+* Tailwind CSS
+* Axios
+* Lucide React
+* Socket.IO Client
+
+## Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* Socket.IO
+
+## Architecture
+
+Nexwork follows a client-server architecture:
+
+```text
+React Frontend
+      │
+      │ REST API
+      ▼
+Express / Node.js Backend
+      │
+      ▼
+   MongoDB
+```
+
+Real-time communication runs alongside the REST API:
+
+```text
+React Client
+     │
+     │ Socket.IO
+     ▼
+Node.js + Socket.IO
+     │
+     ▼
+Connected Clients
+```
+
+---
+
+# 🚀 Setup & Installation
+
+## Prerequisites
+
+Before running Nexwork locally, make sure you have:
+
+* Node.js
+* npm
+* MongoDB or MongoDB Atlas
+* Git
+
+---
+
+## 1. Clone the repository
+
+```bash
+git clone <https://github.com/Rajghosh786/Nexwork.git>
+cd nexwork
+```
+
+---
+
+## 2. Install dependencies
+
+Install backend dependencies:
+
+```bash
+cd server
+npm install
+```
+
+Install frontend dependencies:
+
+```bash
+cd ../client
+npm install
+```
+
+---
+
+# 🔑 Environment Variables
+
+Create an environment file for the backend.
+
+Example:
+
+```env
+PORT=5000
+ATLAS_URI=<your_mongodb_connection_string>
+JWT_SECRET=<your_jwt_secret>
+CLIENT_URL=http://localhost:5173
+```
+
+Add any additional environment variables required by your current backend configuration.
+
+For the frontend, configure the API base URL according to the environment in which the application is running.
+
+> Never commit real credentials, API keys, database passwords, or JWT secrets to the repository.
+
+---
+
+# ▶️ Running the Application
+
+## Start the backend
+
+```bash
+cd server
+npm run dev
+```
+
+or, depending on the configured scripts:
+
+```bash
+npm start
+```
+
+---
+
+## Start the frontend
+
+In another terminal:
+
+```bash
+cd client
+npm run dev
+```
+
+The frontend will normally be available at:
+
+```text
+http://localhost:5173
+```
+
+The backend will run on the port configured in your environment.
+
+---
+
 # 🖥️ Application Structure
 
 Nexwork is divided into several major areas.
@@ -218,55 +364,6 @@ Nexwork
                 ├── In Progress
                 ├── Review
                 └── Done
-```
-
----
-
-# 🛠️ Tech Stack
-
-## Frontend
-
-* React
-* React Router
-* Tailwind CSS
-* Axios
-* Lucide React
-* Socket.IO Client
-
-## Backend
-
-* Node.js
-* Express.js
-* MongoDB
-* Mongoose
-* Socket.IO
-
-## Architecture
-
-Nexwork follows a client-server architecture:
-
-```text
-React Frontend
-      │
-      │ REST API
-      ▼
-Express / Node.js Backend
-      │
-      ▼
-   MongoDB
-```
-
-Real-time communication runs alongside the REST API:
-
-```text
-React Client
-     │
-     │ Socket.IO
-     ▼
-Node.js + Socket.IO
-     │
-     ▼
-Connected Clients
 ```
 
 ---
@@ -447,103 +544,6 @@ A user must be a member of the workspace to:
 Conversation-level access is also checked by verifying that the authenticated user is a participant.
 
 This prevents users from accessing conversations they do not belong to.
-
----
-
-# 🚀 Getting Started
-
-## Prerequisites
-
-Before running Nexwork locally, make sure you have:
-
-* Node.js
-* npm
-* MongoDB or MongoDB Atlas
-* Git
-
----
-
-## 1. Clone the repository
-
-```bash
-git clone <your-repository-url>
-cd nexwork
-```
-
----
-
-## 2. Install dependencies
-
-Install backend dependencies:
-
-```bash
-cd server
-npm install
-```
-
-Install frontend dependencies:
-
-```bash
-cd ../client
-npm install
-```
-
----
-
-# 🔑 Environment Variables
-
-Create an environment file for the backend.
-
-Example:
-
-```env
-PORT=5000
-ATLAS_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-CLIENT_URL=http://localhost:5173
-```
-
-Add any additional environment variables required by your current backend configuration.
-
-For the frontend, configure the API base URL according to the environment in which the application is running.
-
-> Never commit real credentials, API keys, database passwords, or JWT secrets to the repository.
-
----
-
-# ▶️ Running the Application
-
-## Start the backend
-
-```bash
-cd server
-npm run dev
-```
-
-or, depending on the configured scripts:
-
-```bash
-npm start
-```
-
----
-
-## Start the frontend
-
-In another terminal:
-
-```bash
-cd client
-npm run dev
-```
-
-The frontend will normally be available at:
-
-```text
-http://localhost:5173
-```
-
-The backend will run on the port configured in your environment.
 
 ---
 
@@ -828,6 +828,11 @@ When deploying:
 
 ---
 
+## Deployed App
+
+👉 Frontend - [https://nexwoork.netlify.app/](https://nexwoork.netlify.app/)
+<!-- ---
+
 # 📸 Screenshots
 
 Add screenshots of the main Nexwork interfaces here as the project UI is finalized.
@@ -861,7 +866,7 @@ Example:
 ### Project Board
 
 ![Nexwork Project Board](./screenshots/project-board.png)
-```
+``` -->
 
 ---
 
