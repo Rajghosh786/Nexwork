@@ -15,6 +15,8 @@ const workspaceRoute = require("./routes/workspace.route");
 const chatRoute = require("./routes/chat.route");
 const notificationRoute = require("./routes/notification.route");
 const todoRoute = require("./routes/todo.route");
+const projectRoute = require("./routes/project.route");
+const issueRoute = require("./routes/issue.route");
 const setupSocketHandlers = require("./socket/socket.handlers");
 
 const app = express();
@@ -48,6 +50,10 @@ app.use("/api/workspaces", workspaceRoute);
 app.use("/api/conversations", chatRoute);
 app.use("/api/notifications", notificationRoute);
 app.use("/api/todo", todoRoute);
+
+// Project and Issue routes are mounted under /api/workspaces for consistent hierarchy
+app.use("/api/workspaces", projectRoute);
+app.use("/api/workspaces", issueRoute);
 
 setupSocketHandlers(io);
 

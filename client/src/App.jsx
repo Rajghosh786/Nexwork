@@ -9,10 +9,13 @@ import OnboardingRoute from "./components/OnboardingRoute";
 import OrganizationSetup from "./pages/OrganizationSetup";
 import PlanSelection from "./pages/PlanSelection";
 import OrganizationPayment from "./pages/OrganizationPayment";
+import LandingPage from "./components/LandingPage";
 
 const App = () => {
     return (
         <Routes>
+            <Route path="/" element={<LandingPage />} />
+
             <Route
                 path="/login"
                 element={

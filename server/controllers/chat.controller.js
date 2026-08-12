@@ -260,6 +260,20 @@ const createConversation = async (req, res) => {
             });
         }
 
+        const channelName = name.trim();
+
+        const existingChannel = await Conversation.findOne({
+            workspace: workspaceId,
+            type: "GROUP",
+            name: channelName,
+        });
+
+        if (existingChannel) {
+            return res.status(400).json({
+                message: "A channel with this name already exists",
+            });
+        }
+
         const uniqueParticipantIds = [
             ...new Set((participantIds || []).map((id) => id.toString())),
         ];

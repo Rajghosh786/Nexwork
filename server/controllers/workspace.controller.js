@@ -27,6 +27,37 @@ const getWorkspaces = async (req, res) => {
     }
 };
 
+const getWorkspaceMembers = async (req, res) => {
+    try {
+        const { workspaceId } = req.params;
+
+        const membership = await WorkspaceMember.findOne({
+            workspace: workspaceId,
+            user: req.user._id,
+        });
+
+        if (!membership) {
+            return res.status(403).json({
+                message: "You are not a member of this workspace",
+            });
+        }
+
+        const members = await WorkspaceMember.find({
+            workspace: workspaceId,
+        }).populate("user", "fullName email");
+
+        return res.status(200).json({
+            members,
+        });
+    } catch (error) {
+        console.error("Get workspace members error:", error);
+
+        return res.status(500).json({
+            message: "Unable to get workspace members",
+        });
+    }
+};
+
 module.exports = {
-    getWorkspaces,
+    getWorkspaces, getWorkspaceMembers
 };

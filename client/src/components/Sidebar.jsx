@@ -10,6 +10,8 @@ import {
     Sun,
     X,
     BookOpenCheck,
+    FolderKanban,
+    Layers3,
 } from "lucide-react";
 
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
@@ -70,6 +72,7 @@ const Sidebar = ({
     selectedConversation,
     onNavigateHome,
     onNavigateTodo,
+    onNavigateProjects,
     onSelectConversation,
     onCreateChannel,
     onCreateDirectMessage,
@@ -139,6 +142,9 @@ const Sidebar = ({
         <aside className="flex h-screen w-[246px] shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-[#1c1c21]">
             <div className="flex h-[70px] shrink-0 items-center justify-between border-b border-gray-100 px-5 dark:border-gray-800">
                 <div className="flex items-center gap-2">
+                    <div className="grid h-8 w-8 place-items-center rounded-lg bg-violet-600 shadow-sm shadow-violet-600/20">
+                            <Layers3 className="h-4 w-4 text-white" />
+                    </div>
                     <span className="text-sm font-bold text-gray-900 dark:text-white">
                         Nexwork
                     </span>
@@ -182,12 +188,14 @@ const Sidebar = ({
                         active={activeView === "todo"}
                         onClick={onNavigateTodo}
                     />
-                    <SidebarItem
-                        icon={BookOpenCheck}
-                        label="Collab Task"
-                        // active={activeView === "todo"}
-                        onClick={onNavigateTodo}
-                    />
+                    {selectedWorkspace?.type === "ORGANIZATION" && (
+                        <SidebarItem
+                            icon={FolderKanban}
+                            label="Projects"
+                            active={activeView === "projects" || activeView === "project_detail"}
+                            onClick={onNavigateProjects}
+                        />
+                    )}
                 </SidebarSection>
 
                 <div className="mt-5">

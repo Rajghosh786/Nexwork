@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Bell, Menu } from "lucide-react";
+import { Bell, Menu, Users } from "lucide-react";
 
 import Sidebar from "./Sidebar";
 import InvitationPanel from "./InvitationPanel";
@@ -8,11 +8,14 @@ import ChatView from "./ChatView";
 import TodoBoard from "./todo/TodoBoard";
 import CreateChannelModal from "./CreateChannelModal";
 import CreateDirectMessageModal from "./CreateDirectMessageModal";
+import ProjectsList from "./projects/ProjectsList";
+import ProjectDetail from "./projects/ProjectDetail";
 
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import api from "../services/api";
 import { formatWorkspace } from "../utils/helpers";
+import OrganizationMembersModal from "./OrganizationMembersModal";
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -28,13 +31,15 @@ const Dashboard = () => {
     const [activeView, setActiveView] = useState("home");
     const [selectedConversation, setSelectedConversation] =
         useState(null);
+    const [selectedProject, setSelectedProject] = useState(null);
 
     const [invitationCount, setInvitationCount] = useState(0);
     const [showSidebar, setShowSidebar] = useState(false);
     const [showInvitations, setShowInvitations] = useState(false);
     const [showCreateChannel, setShowCreateChannel] = useState(false);
-    const [showCreateDirectMessage, setShowCreateDirectMessage] =
-        useState(false);
+    const [showCreateDirectMessage, setShowCreateDirectMessage] = useState(false);
+    const [organizationMembers, setOrganizationMembers] = useState([]);
+    const [showOrganizationMembers, setShowOrganizationMembers] = useState(false);
 
     const activeViewRef = useRef(activeView);
     const selectedConversationRef = useRef(selectedConversation);
@@ -128,6 +133,30 @@ const Dashboard = () => {
         }
     }, [selectedWorkspace]);
 
+    const fetchOrganizationMembers = async (workspace) => {
+        const workspaceId = getWorkspaceId(workspace);
+
+        if (!workspaceId || workspace?.type !== "ORGANIZATION") {
+            setOrganizationMembers([]);
+            return;
+        }
+
+        try {
+            const response = await api.get(
+                `/workspaces/${workspaceId}/members`
+            );
+
+            setOrganizationMembers(response.data.members || []);
+        } catch (error) {
+            console.error(
+                "Failed to fetch organization members:",
+                error
+            );
+
+            setOrganizationMembers([]);
+        }
+    };
+
     const fetchInvitationCount = async () => {
         try {
             const response = await api.get("/invitations");
@@ -149,8 +178,11 @@ const Dashboard = () => {
         }
 
         fetchConversations();
+        fetchOrganizationMembers(selectedWorkspace);
         setActiveView("home");
         setSelectedConversation(null);
+        setSelectedProject(null);
+        setShowOrganizationMembers(false);
     }, [selectedWorkspace, fetchConversations]);
 
     useEffect(() => {
@@ -228,17 +260,34 @@ const Dashboard = () => {
     const handleNavigateHome = () => {
         setActiveView("home");
         setSelectedConversation(null);
+        setSelectedProject(null);
         setShowSidebar(false);
     };
 
     const handleNavigateTodo = () => {
         setActiveView("todo");
         setSelectedConversation(null);
+        setSelectedProject(null);
+        setShowSidebar(false);
+    };
+
+    const handleNavigateProjects = () => {
+        setActiveView("projects");
+        setSelectedConversation(null);
+        setSelectedProject(null);
+        setShowSidebar(false);
+    };
+
+    const handleSelectProject = (project) => {
+        setSelectedProject(project);
+        setActiveView("project_detail");
+        setSelectedConversation(null);
         setShowSidebar(false);
     };
 
     const handleSelectConversation = (conversation, viewType) => {
         setSelectedConversation(conversation);
+        setSelectedProject(null);
         setActiveView(viewType);
         setShowSidebar(false);
 
@@ -320,6 +369,7 @@ const Dashboard = () => {
         selectedConversation,
         onNavigateHome: handleNavigateHome,
         onNavigateTodo: handleNavigateTodo,
+        onNavigateProjects: handleNavigateProjects,
         onSelectConversation: handleSelectConversation,
         onCreateChannel: () => setShowCreateChannel(true),
         onCreateDirectMessage: () => setShowCreateDirectMessage(true),
@@ -334,6 +384,14 @@ const Dashboard = () => {
 
         if (activeView === "todo") {
             return "To-Do";
+        }
+
+        if (activeView === "projects") {
+            return "Projects";
+        }
+
+        if (activeView === "project_detail" && selectedProject) {
+            return selectedProject.name;
         }
 
         if (selectedConversation) {
@@ -381,9 +439,13 @@ const Dashboard = () => {
                                     ? "Workspace"
                                     : activeView === "todo"
                                       ? "Personal"
-                                      : activeView === "channel"
-                                        ? "Channel"
-                                        : "Direct Message"}
+                                      : activeView === "projects"
+                                        ? "Organization"
+                                        : activeView === "project_detail"
+                                            ? "Project"
+                                            : activeView === "channel"
+                                                ? "Channel"
+                                                : "Direct Message"}
                             </p>
 
                             <p className="truncate text-sm font-semibold">
@@ -392,28 +454,48 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="relative">
-                        <button
-                            onClick={() =>
-                                setShowInvitations(!showInvitations)
-                            }
-                            className="relative grid h-9 w-9 place-items-center rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        >
-                            <Bell className="h-5 w-5" />
+                    <div className="flex items-center gap-2">
+                        {selectedWorkspace?.type === "ORGANIZATION" && (
+                            <button
+                                onClick={() =>
+                                    setShowOrganizationMembers(
+                                        !showOrganizationMembers
+                                    )
+                                }
+                                className="flex h-9 items-center gap-2 rounded-lg border border-gray-200 px-3 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
+                                title="Organization members"
+                            >
+                                <Users className="h-4 w-4" />
 
-                            {invitationCount > 0 && (
-                                <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-violet-600 px-1 text-[8px] font-bold text-white">
-                                    {invitationCount}
+                                <span>
+                                    {organizationMembers.length}
                                 </span>
-                            )}
-                        </button>
-
-                        {showInvitations && (
-                            <InvitationPanel
-                                onClose={() => setShowInvitations(false)}
-                                onUpdate={handleInvitationUpdate}
-                            />
+                            </button>
                         )}
+
+                        <div className="relative">
+                            <button
+                                onClick={() =>
+                                    setShowInvitations(!showInvitations)
+                                }
+                                className="relative grid h-9 w-9 place-items-center rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            >
+                                <Bell className="h-5 w-5" />
+
+                                {invitationCount > 0 && (
+                                    <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-violet-600 px-1 text-[8px] font-bold text-white">
+                                        {invitationCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            {showInvitations && (
+                                <InvitationPanel
+                                    onClose={() => setShowInvitations(false)}
+                                    onUpdate={handleInvitationUpdate}
+                                />
+                            )}
+                        </div>
                     </div>
                 </header>
 
@@ -428,6 +510,21 @@ const Dashboard = () => {
                     <div className="h-[calc(100vh-70px)]">
                         <TodoBoard />
                     </div>
+                ) : activeView === "projects" ? (
+                    <div className="h-[calc(100vh-70px)]">
+                        <ProjectsList 
+                            workspaceId={getWorkspaceId(selectedWorkspace)} 
+                            onSelectProject={handleSelectProject} 
+                        />
+                    </div>
+                ) : activeView === "project_detail" ? (
+                    <div className="h-[calc(100vh-70px)]">
+                        <ProjectDetail 
+                            workspaceId={getWorkspaceId(selectedWorkspace)} 
+                            projectId={selectedProject?._id}
+                            onBack={handleNavigateProjects}
+                        />
+                    </div>
                 ) : (
                     <div className="h-[calc(100vh-70px)]">
                         <ChatView
@@ -439,6 +536,16 @@ const Dashboard = () => {
                     </div>
                 )}
             </main>
+
+        {showOrganizationMembers &&
+            selectedWorkspace?.type === "ORGANIZATION" && (
+                <OrganizationMembersModal
+                    workspaceId={getWorkspaceId(selectedWorkspace)}
+                    onClose={() =>
+                        setShowOrganizationMembers(false)
+                    }
+                />
+            )}
 
             {showCreateChannel && (
                 <CreateChannelModal
